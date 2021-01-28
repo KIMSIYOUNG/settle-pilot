@@ -35,3 +35,25 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### etc ###
+
+./jenkins
+./mysql
+
+### multi-module ###
+pilot-admin/build
+pilot-admin/src/main/generated
+pilot-admin/src/test/generated_tests
+
+pilot-batch/build
+pilot-batch/src/main/generated
+pilot-batch/src/test/generated_tests
+
+pilot-core/build
+pilot-core/src/main/generated
+pilot-core/src/test/generated_tests
+
+pilot-test-fixture/build
+pilot-test-fixture/src/main/generated
+pilot-test-fixture/src/test/generated_tests

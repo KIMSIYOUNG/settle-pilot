@@ -1,1 +1,13 @@
-rootProject.name = 'pilot-project'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'pilot-root'
+
+include 'pilot-admin',
+        'pilot-core',
+        'pilot-batch',
+        'pilot-test-fixture'
+

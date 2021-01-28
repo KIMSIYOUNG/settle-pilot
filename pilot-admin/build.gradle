@@ -1,0 +1,93 @@
+plugins {
+    id "org.asciidoctor.convert" version "1.5.9.2"
+    id "com.github.node-gradle.node" version "2.2.4"
+}
+
+dependencies {
+    implementation project(':pilot-core')
+
+    testImplementation project(':pilot-test-fixture').sourceSets.test.output
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.security:spring-security-test'
+    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+}
+
+node {
+    download = true
+    version = "14.15.1"
+    npmVersion = ""
+    distBaseUrl = "https://nodejs.org/dist"
+    workDir = file("${project.projectDir}/.gradle/nodejs")
+}
+
+def frontendDir = "$projectDir/frontend"
+def frontendBuildDir = "$frontendDir/build"
+def frontendBuildCopyDir = "$projectDir/src/main/resources/"
+
+task installFrontend(type: NpmTask) {
+    workingDir = file(frontendDir)
+    args = ['install']
+}
+
+task buildFrontend(type: NpmTask) {
+    dependsOn "installFrontend"
+    workingDir = file(frontendDir)
+    args = ['run', 'build']
+}
+
+task copyBuildFrontend(type: Copy) {
+    dependsOn "buildFrontend"
+    from frontendBuildDir
+    into frontendBuildCopyDir
+}
+
+compileJava.dependsOn "copyBuildFrontend"
+
+
+//def webappDir = "${projectDir}/frontend"
+//
+//sourceSets {
+//    main {
+//        resources {
+//            srcDirs = ["$webappDir/build", "$projectDir/src/main/resources"]
+//        }
+//    }
+//}
+//
+//task buildReact(type: Exec) {
+//    dependsOn "installReact"
+//    workingDir "$webappDir"
+//    inputs.dir "$webappDir"
+//    group = BasePlugin.BUILD_GROUP
+//    commandLine "npm", "run-script", "build"
+//}
+//
+//task installReact(type: Exec) {
+//    workingDir "$webappDir"
+//    inputs.dir "$webappDir"
+//    group = BasePlugin.BUILD_GROUP
+//    commandLine "npm", "audit", "fix"
+//    commandLine 'npm', 'install'
+//}
+//
+//processResources {
+//    dependsOn "buildReact"
+//}
+
+asciidoctor {
+    dependsOn test
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
+}

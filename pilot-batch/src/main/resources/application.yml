@@ -1,0 +1,77 @@
+spring:
+  profiles:
+    active: local-h2
+  jpa:
+    show-sql: true
+    properties:
+      hibernate.default_batch_fetch_size: 500
+      hibernate.format_sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+
+spring.batch.job.names: ${job.name:NONE}
+logging.level.org.springframework.batch: DEBUG
+
+---
+spring:
+  profiles: local-h2
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: pilot
+    password: project
+    url: jdbc:h2:mem:pilot;DB_CLOSE_DELAY=-1;MODE=MYSQL;
+
+  jpa:
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
+      hibernate.dialect.storage_engine: innodb
+chunk:
+  size: 2
+---
+spring:
+  profiles: local-mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: anfro123!
+    url: jdbc:mysql://siyoung-pilot-rds4.cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306/pilot?serverTimezone=UTC&characterEncoding=UTF-8
+chunk:
+  size: 2
+---
+spring:
+  profiles: mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: anfro123!
+    url: jdbc:mysql://siyoung-pilot-rds4.cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306/pilot?serverTimezone=UTC&characterEncoding=UTF-8
+chunk:
+  size: 1000
+
+
+
+
+
+---
+spring:
+  profiles: create-mock-data
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: anfro123!
+    url: jdbc:mysql://siyoung-pilot-rds4.cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306/pilot?serverTimezone=UTC&characterEncoding=UTF-8
+
+chunk:
+  size: 2
+---
+spring:
+  profiles: truncate-mock-data
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: anfro123!
+    url: jdbc:mysql://siyoung-pilot-rds4.cki3kdutd3oc.ap-northeast-2.rds.amazonaws.com:3306/pilot?serverTimezone=UTC&characterEncoding=UTF-8
+chunk:
+  size: 2

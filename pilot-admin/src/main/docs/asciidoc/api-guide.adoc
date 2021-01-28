@@ -1,0 +1,380 @@
+ifndef::snippets[]
+:snippets: ../../../build/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:operation-http-request-title: 요청 예제
+:operation-http-response-title: 응답 예제
+
+
+[[title]]
+= 정산 어드민 API
+
+[[overview]]
+== 미리보기
+
+이 문서는 정산시스템팀 파일럿 프로젝트를 구성하는 리소스들에 대한 명세입니다.
+
+기본적으로 관리자는 모든 데이터에 대해 생성/조회/수정/삭제 권한이 있으며 일반 회원은 조회권한만 있습니다.(자신의 정보수정/탈퇴는 가능합니다.)
+
+문제가 있으면 siyoung@woowahan.com으로 피드백 보내주시면 감사하겠습니다.
+
+[lowerroman]
+. http://localhost:8080/docs#schema[Schema]
+. http://localhost:8080/docs#http-verbs[Http Verbs]
+. http://localhost:8080/docs#http-status-code[Http Status Code]
+. http://localhost:8080/docs#authentication[Authentication]
+. http://localhost:8080/docs#error[Errors]
+. http://localhost:8080/docs#resources[Resources]
+
+[[schema]]
+== 스키마
+
+모든 API는 Http를 사용하고, `http://localhost:8080/api` 주소로 접근 가능합니다.
+모든 데이터는 JSON을 통해 통신됩니다.
+
+[source,bash]
+----
+$ curl -i http://localhost:8080/api/members -H Authorization:Bearer SAMPLE_ACCESS_TOKEN
+HTTP/1.1 200
+Server: localhost:8080
+Date: Wed, 05 Aug 2020 06:27:05 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+----
+
+[[http-verb]]
+== HTTP Verbs
+
+정산 어드민 API에서 사용하는 HTTP Verbs는 가능한 범위 내 표준 HTTP와 REST 규약을 따릅니다.
+
+|===
+| Method | Usage
+
+| `GET`
+| 기존의 리소스를 가져오는 경우
+
+| `POST`
+| 새로운 리소스를 만드는 경우
+
+| `PUT`
+| 기존의 리소스를 수정하는 경우
+
+| `PATCH`
+| 기존 리소스의 일부를 수정하는 경우
+
+| `DELETE`
+| 기존 리소스를 삭제하는 경우
+|===
+
+[[http-status-code]]
+== HTTP Status Code
+
+정산 어드민 API에서 사용하는 HTTP Status Code는 가능한 범위 내 표준 HTTP와 REST 규약을 따릅니다.
+
+|===
+| Status Code | Usage
+
+| `200 OK`
+| 요청을 성공적으로 처리함
+
+| `201 Created`
+| 새 리소스를 성공적으로 생성함. 응답의 `Location` 헤더에 해당 리소스의 URI가 담겨있다.
+
+| `204 No Content`
+| 기존 리소스를 성공적으로 수정함.
+
+| `400 Bad Request`
+| 잘못된 요청을 보낸 경우. 응답 본문에 더 오류에 대한 정보가 담겨있다.
+
+| `401 UnAuthorized`
+| 인증을 요구하는 요청에 인증을 포함하지 않은 경우.
+
+| `403 Forbidden`
+| 해당 리소스에 접근할 권한이 없는 경우.
+
+| `404 Not Found`
+| 요청한 리소스가 없음.
+
+| `500 Internal Sever Error`
+| 예상치 못한 내부 서버 에러.
+|===
+
+[[authentication]]
+== 인증
+
+정산 어드민 API v1에서의 인증은 OAuth2를 통해 이루어집니다.
+Authentication이 없는 경우 `401 UnAuthorized` 를 반환합니다.
+인가는 세션을 통해서 진행하고 있습니다.
+
+[[exception]]
+== 공통 예외사항
+
+공통 예외상항은 어플리케이션 전체에서 발생하는 예외를 의미합니다.
+
+[[exception-role-forbidden]]
+=== 인가 실패(권한X)
+
+operation::owners/create-forbidden[snippets='http-request,http-response,request-headers,request-fields']
+
+[[exception-unexpected]]
+=== 알수없는 예외
+
+operation::exception/unexpected[snippets='http-request,http-response,path-parameters,request-headers,response-fields']
+
+[[exception-business]]
+== 비지니스 예외
+
+비지니스 예외는 지정되지 않은 형태의 요청/잘못된 요청 데이터 등으로 발생합니다.
+
+[[exception-not-found]]
+=== 존재하지 않는 리소스
+
+operation::owners/get-fail[snippets='http-request,http-response,request-headers,path-parameters,response-headers,response-fields']
+
+[[exception-invalid-path]]
+=== 잘못된 PATH param
+
+operation::exception/path-bind-exception[snippets='http-request,http-response,request-headers,request-parameters,response-fields']
+
+[[exception-invalid-datetime]]
+=== 잘못된 DATE_TIME
+
+operation::exception/datetime-bind-exception[snippets='http-request,http-response,request-headers,request-parameters,response-fields']
+
+[[exception-validation]]
+=== 제약사항 예외
+
+operation::exception/valid-exception[snippets='http-request,http-response,request-headers,response-fields']
+
+[[exception-jackson]]
+=== 본문 파싱 예외
+
+operation::exception/jackson-exception[snippets='http-request,http-response,request-headers,response-fields']
+
+[[exception-method-argument-path]]
+=== 잘못된 path type
+
+operation::exception/method-argument-type-exception[snippets='http-request,http-response,request-headers,path-parameters,response-fields']
+
+[[exception-media-type]]
+=== 잘못된 MediaType
+
+operation::exception/media-type-not-supported-exception[snippets='http-request,http-response,request-headers,response-fields']
+
+[[resources-member]]
+== 회원(우아한형제들 직원)
+
+[[resources-member-get]]
+=== 회원조회
+
+operation::member/get-success[snippets='http-request,http-response,request-headers,response-fields']
+
+[[resources-member-get-all]]
+=== 회원전체조회
+
+operation::member/fetch-all[snippets='http-request,http-response,request-headers,response-fields']
+
+[[resources-member-request-change-role]]
+=== 회원권한변경 요청
+
+operation::authorities/create[snippets='http-request,http-response,request-headers,request-fields']
+
+[[resources-member-change-role-approve]]
+=== 회원권한변경 승인
+
+operation::authorities/approve[snippets='http-request,http-response,path-parameters']
+
+[[resources-member-change-role-reject]]
+=== 회원권한변경 거절
+
+operation::authorities/reject[snippets='http-request,http-response,path-parameters']
+
+[[resources-member-change-role-by-admin]]
+=== 회원권한 강제변경 by 관리자
+
+operation::member/change-member-role[snippets='http-request,http-response,request-fields']
+
+[[resources-member-delete-by-admin]]
+=== 회원강제탈퇴(by 어드민)
+
+operation::member/delete-by-admin[snippets='http-request,http-response,path-parameters']
+
+[[resources-member-delete-by-current-member]]
+=== 회원탈퇴
+
+operation::member/delete-by-current-member[snippets='http-request,http-response']
+
+[[resources-owner]]
+== B2B(업주)
+
+[[resources-owner-create]]
+=== 업주생성
+
+operation::owners/create[snippets='http-request,http-response,request-headers,request-fields,response-headers']
+
+[[resources-owner-get]]
+=== 업주조회(단건)
+
+operation::owners/get[snippets='http-request,http-response,path-parameters,request-headers,response-headers,response-fields']
+
+[[resources-owner-get-condition]]
+=== 업주조회(조건)
+
+operation::owners/get-by-condition[snippets='http-request,http-response,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-owner-get-all]]
+=== 업주전체조회
+
+operation::owners/get-all[snippets='http-request,http-response,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-owner-update]]
+=== 업주정보수정
+
+operation::owners/update[snippets='http-request,http-response,request-headers,request-fields']
+
+[[resources-owner-delete]]
+=== 업주삭제
+
+operation::owners/delete[snippets='http-request,http-response,path-parameters']
+
+[[resources-order]]
+== 주문
+
+[[resources-order-create]]
+=== 주문생성
+
+operation::orders/create[snippets='http-request,http-response,request-headers,request-fields,response-headers']
+
+[[resources-order-create-reOrder]]
+=== 주문취소 및 재생성(기존 주문 취소 및 생성)
+
+동일한 주문번호를 사용하게 됩니다.
+기존 주문은 취소됨에 유의해주세요.
+
+operation::orders/create-reOrder[snippets='http-request,http-response,request-headers,request-fields,response-headers']
+
+[[resources-order-get]]
+=== 주문조회(단건)
+
+operation::orders/fetch-by-id[snippets='http-request,http-response,path-parameters,request-headers,response-fields']
+
+[[resources-order-get-condition]]
+=== 주문조회(조건)
+
+operation::orders/fetch-by-condition[snippets='http-request,http-response,request-headers,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-order-get-by-settle-id]]
+=== 주문 조회(지급금 ID 기준)
+
+operation::rewards/fetch-by-settle-id[snippets='http-request,http-response,request-headers,request-parameters,request-headers,path-parameters,response-headers,response-fields']
+
+[[resources-order-update-status]]
+=== 주문상태 수정
+
+operation::orders/update-status[snippets='http-request,http-response,path-parameters,request-headers,request-fields,response-headers']
+
+[[resources-order-delete]]
+=== 주문삭제
+
+operation::orders/delete-by-id[snippets='http-request,http-response,path-parameters']
+
+[[resources-reward]]
+== 보상금액
+
+[[resources-reward-create]]
+=== 보상금액 생성
+
+operation::rewards/create[snippets='http-request,http-response,request-headers,request-fields,response-headers']
+
+[[resources-reward-create-period]]
+=== 기간에 속하는 보상금액 생성
+
+기간에 속하는 모든 주문에 대해서 주문금액만큼 보상금액을 생성합니다.
+
+operation::rewards/create/period[snippets='http-request,http-response,request-headers,request-fields,response-headers']
+
+[[resources-reward-create-orders]]
+=== 주문번호들을 기준으로 보상금액 생성
+
+요청으로 받은 모든 주문번호에 대해 주문금액만큼 보상금액을 생성합니다.
+
+operation::rewards/create/orders[snippets='http-request,http-response,request-headers,request-fields,response-headers']
+
+[[resources-reward-get]]
+=== 보상금액 조회(단건)
+
+operation::rewards/fetch-by-id[snippets='http-request,http-response,path-parameters,request-headers,response-fields']
+
+[[resources-reward-get-condition]]
+=== 보상금액 전체조회
+
+operation::rewards/fetch-all[snippets='http-request,http-response,request-headers,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-reward-fetch-condition]]
+=== 보상금액 조건검색
+
+operation::rewards/fetch-by-condition[snippets='http-request,http-response,request-headers,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-reward-get-by-settle-id]]
+=== 보상금액 조회(지급금 ID 기준)
+
+operation::rewards/fetch-by-settle-id[snippets='http-request,http-response,request-headers,request-parameters,request-headers,path-parameters,response-headers,response-fields']
+
+[[resources-reward-update-status]]
+=== 보상금액 수정
+
+operation::rewards/update[snippets='http-request,http-response,path-parameters,request-headers,request-fields,response-headers']
+
+[[resources-reward-delete]]
+=== 보상금액 삭제
+
+operation::rewards/delete[snippets='http-request,http-response,path-parameters']
+
+[[resources-settle]]
+== 지급금
+
+[[resources-settle-create]]
+=== 지급금 생성
+
+operation::settles/create[snippets='http-request,http-response,request-headers,request-fields,response-headers']
+
+[[resources-settle-create]]
+=== 지급금 생성(업주별 지급금 계산)
+
+operation::settles/create/batch[snippets='http-request,http-response,request-headers,request-fields']
+
+[[resources-settle-fetch-by-condition]]
+=== 지급금 조회(조건)
+
+operation::settles/fetch-by-condition[snippets='http-request,http-response,request-headers,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-settle-fetch-all]]
+=== 지급금 전체조회
+
+operation::settles/fetch-all[snippets='http-request,http-response,request-headers,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-settle-fetch-amount]]
+=== 기간별 지급금 금액 조회
+
+operation::settles/fetch-amount-by-condition[snippets='http-request,http-response,request-parameters,request-headers,response-headers,response-fields']
+
+[[resources-settle-update]]
+=== 지급금 수정
+
+operation::settles/update[snippets='http-request,http-response,path-parameters,request-headers,request-fields,response-headers']
+
+[[resources-settle-update-bulk]]
+=== 지급금 벌크성 업데이트
+
+operation::settles/update-bulk[snippets='http-request,http-response,request-fields']
+
+[[resources-settle-delete]]
+=== 지급금 삭제
+
+operation::settles/delete[snippets='http-request,http-response,path-parameters']

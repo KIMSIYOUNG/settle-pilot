@@ -1,0 +1,12 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 123475543668-jnfqi7fgq9idk2sc8q7q4kaevuc45iik.apps.googleusercontent.com
+            clientSecret: xRCAYGBG0dKpZdjxw_ABEv23
+            redirectUri: http://pilot-admin.ap-northeast-2.elasticbeanstalk.com/oauth2/callback/google
+            scope:
+              - email
+              - profile
